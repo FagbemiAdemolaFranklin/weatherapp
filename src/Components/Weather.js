@@ -1,22 +1,23 @@
+require("dotenv").config;
 const react = require("react");
 const Form = require("./Form").Form;
 const WeatherParams = require("./WeatherParams").WeatherParams;
 const HourlyTemp = require("./HourlyTemp").HourlyTemp;
 const useState= require("react").useState;
-var fetch = require("fetch");
+
 export function Weather() {
     const [result, setResult] = useState([]);
     const [location, setLocation] = useState({
-        longitude:"",
-        latitude:""
+        "longitude":"",
+        "latitude":""
     })
     const [locationState, setLocationState] = useState(false);
     window.navigator.geolocation.getCurrentPosition((success) => {
         setLocationState(true);
         var {longitude, latitude} = success.coords;
         setLocation({
-            longitude:longitude,
-            latitude:latitude
+            "longitude":longitude,
+            "latitude":latitude
         });
         
     }, (error) => {
@@ -39,20 +40,21 @@ export function Weather() {
             method:"GET"
         }
         var url = `https://api.openweathermap.org/data/2.5/weather?lat=${location.latitude}&lon=${location.longitude}&appid=${process.env.API_KEY}&units=metric`
-        fetch(url, options).then( (response) => {
-            response.json();
-        }).then((jsonResult) => {
+        fetch(url, options).then((jsonResult) => {
+            alert(jsonResult)
+            console.log(jsonResult);
             setResult(jsonResult);
         })
-    }else if(!locationState) {
-        if(search.length = 0 ) {
+    }else{
+        
+        if(search.length == 0 ) {
             var options = {
                 method:"GET"
             }
             var url = `https://api.openweathermap.org/data/2.5/weather?q=america&appid=${process.env.API_KEY}&units=metric`
-            fetch(url, options).then( (response) => {
-                response.json();
-            }).then((jsonResult) => {
+            fetch(url, options).then((jsonResult) => {
+                alert(jsonResult)
+                console.log(jsonResult);
                 setResult(jsonResult);
             })
         }else if(search.length > 0 ) {
@@ -60,9 +62,9 @@ export function Weather() {
                 method:"GET"
             }
             var url = `https://api.openweathermap.org/data/2.5/weather?q=${search}&appid=${process.env.API_KEY}&units=metric`
-            fetch(url, options).then( (response) => {
-                response.json();
-            }).then((jsonResult) => {
+            fetch(url, options).then((jsonResult) => {
+                alert(jsonResult)
+                console.log(jsonResult);
                 setResult(jsonResult);
             })
         }
@@ -71,23 +73,19 @@ export function Weather() {
 
     return(<div>
         <Form OnChange = {OnChange} OnClick = {OnClick} /> 
-        {result.forEach((foundResult) => {
+        {
             <div>
                 <WeatherParams 
-                    degrees = {foundResult.current.temp} 
-                    situation = {foundResult.current.weather[0].description}
-                    icons = {foundResult.current.weather[0].icons}   
+                    degrees = {result.main.temp} 
+                    situation = {result.weather[0].description}
+                    icons = {result.weather[0].icon}  
                 />
 
-                <HourlyTemp 
-                    icons = {foundResult.hourly[0].weather[0].icon}
-                    temp = {foundResult.hourly[0].temp}
-                />
             </div>
             
             
 
-        })}
+        }
        
 
     </div>)
